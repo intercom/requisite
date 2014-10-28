@@ -1,0 +1,6 @@
+require 'requisite/version'
+require 'requisite/boundary_object'
+require 'requisite/boolean'
+require 'requisite/api_model'
+require 'requisite/bad_request_error'
+require 'requisite/bad_type_error'
