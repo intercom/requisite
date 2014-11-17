@@ -32,6 +32,13 @@ class ApiUser < Requisite::ApiModel
   end
 end
 
+class InheritedApiUser < ApiUser
+  serialized_attributes do
+    attribute :new_attribute, type: String
+    attribute :custom_data
+  end
+end
+
 module Requisite
   describe ApiUser do
     it 'accepts a user' do
@@ -70,6 +77,39 @@ module Requisite
       user_request_params = { :user_id => 'abcdef', :created => 'Thursday' }
       user = ApiUser.new(user_request_params)
       proc { user.to_hash }.must_raise(Requisite::BadTypeError)
+    end
+
+    it "can resolve an inherited set of attributes" do
+      user_request_params = {
+        :user_id => 'abcdef',
+        :name => 'Bob',
+        :created => 1414173164,
+        :new_session => true,
+        :custom_attributes => {
+          :is_cool => true,
+          :logins => 77
+        },
+        :custom_data => {
+          :different => true
+        },
+        :new_attribute => 'hi',
+        :junk => 'data'
+      }
+      user = InheritedApiUser.new(user_request_params)
+      user.new_attribute.must_equal 'hi'
+      user.name.must_equal 'Bob'
+      user.custom_data.must_equal({ :different => true })
+      InheritedApiUser.attribute_keys.must_equal([:new_attribute, :custom_data])
+      user.to_hash.must_equal({
+        :user_id => 'abcdef',
+        :name => 'Bob',
+        :created_at => 1414173164,
+        :new_session => true,
+        :custom_data => {
+          :different => true
+        },
+        :new_attribute => 'hi'
+      })
     end
   end
 end

@@ -36,7 +36,11 @@ module Requisite
       end
 
       def attribute_keys
-        @attribute_keys
+        @attribute_keys || []
+      end
+
+      def attribute_keys_with_inheritance
+        superclass.respond_to?(:attribute_keys_with_inheritance) ? superclass.attribute_keys_with_inheritance.concat(attribute_keys) : attribute_keys || []
       end
     end
 
