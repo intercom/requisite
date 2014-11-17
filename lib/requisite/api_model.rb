@@ -31,7 +31,7 @@ module Requisite
     def to_hash
       preprocess_model
       {}.tap do |result|
-        self.class.attribute_keys.each do |meth|
+        self.class.attribute_keys_with_inheritance.each do |meth|
           value = self.send(meth)
           result.merge!({meth => value}) unless value.nil?
         end
