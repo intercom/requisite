@@ -3,22 +3,31 @@ require 'json'
 module Requisite
   class ApiModel < BoundaryObject
     attr_reader :model
-    
+
     def initialize(model={})
       @model = model.kind_of?(Hash) ? Hash[model.map{ |k, v| [k.to_sym, v] }] : model
     end
-    
+
     def convert(name)
       attribute_from_model(name)
     end
-    
+
     def convert!(name)
-      attribute_from_model(name) || (raise NotImplementedError.new("'#{name}' not found on model"))
+      raise NotImplementedError.new("'#{name}' not found on model") unless model_responds_to_attribute_query?(name)
+      attribute_from_model(name)
     end
 
     def attribute_from_model(name)
       if @model.kind_of?(Hash)
         @model[name]
+      else
+        @model.send(name)
+      end
+    end
+
+    def model_responds_to_attribute_query?(name)
+      if @model.kind_of?(Hash)
+        @model[name] != nil
       else
         @model.send(name) if @model.respond_to?(name)
       end
@@ -37,11 +46,11 @@ module Requisite
         end
       end
     end
-    
+
     def to_json
       to_hash.to_json
     end
-    
+
     def parse_typed_hash(name, hash)
       {}.tap do |result|
         passed_hash = attribute_from_model(name)
@@ -52,7 +61,7 @@ module Requisite
         end
       end
     end
-    
+
     def parse_scalar_hash(name)
       {}.tap do |result|
         passed_hash = attribute_from_model(name) || {}
@@ -62,7 +71,7 @@ module Requisite
         end
       end
     end
-    
+
     def parse_typed_array(name, type)
       [].tap do |result|
         passed_array = attribute_from_model(name) || []
@@ -72,13 +81,13 @@ module Requisite
         end
       end
     end
-    
+
     def with_type!(desired_type)
       yield.tap do |value|
         raise_bad_type_if_type_mismatch(value, desired_type) if value
       end
     end
-    
+
     def first_attribute_from_model(*attributes)
       attributes.each do |attribute|
         value = attribute_from_model(attribute)
@@ -88,7 +97,7 @@ module Requisite
       end
       nil
     end
-    
+
     private
 
     def preprocess_model
