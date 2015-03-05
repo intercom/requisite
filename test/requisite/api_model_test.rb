@@ -118,7 +118,7 @@ module Requisite
     it 'attribute! does not raise an error if value on model is false' do
       params_hash = {:d => false}
       DummyApiModel.serialized_attributes { attribute! :d }
-      response = DummyApiModel.new(invalid_params_hash)
+      response = DummyApiModel.new(params_hash)
       response.to_hash.must_equal({d: false})
     end
 
