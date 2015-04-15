@@ -39,6 +39,11 @@ class InheritedApiUser < ApiUser
   end
 end
 
+class UserModel
+  attr_accessor :id, :user_id, :email, :name, :created_at, :created, :last_seen_user_agent, :last_request_at, :unsubscribed_from_emails
+  attr_accessor :update_last_request_at, :new_session, :custom_attributes, :company, :companies
+end
+
 module Requisite
   describe ApiUser do
     it 'accepts a user' do
@@ -110,6 +115,42 @@ module Requisite
         },
         :new_attribute => 'hi'
       })
+    end
+    
+    it 'accepts a user model' do
+      user_model = UserModel.new
+      user_model.user_id = 'abcdef'
+      user_model.name = 'Bob'
+      user = ApiUser.new(user_model)
+      user.to_hash.must_equal({
+        :user_id => 'abcdef',
+        :name => 'Bob',
+        :custom_data => {}
+      })
+      user.name.must_equal('Bob')
+    end
+    
+    it 'accepts a user model and renders nils if asked' do
+      user_model = UserModel.new
+      user_model.user_id = 'abcdef'
+      user_model.name = 'Bob'
+      user = ApiUser.new(user_model)
+      user.to_hash(show_nil: true).must_equal({
+        :id => nil,
+        :user_id => 'abcdef',
+        :email => nil,
+        :name => 'Bob',
+        :created_at => nil,
+        :last_seen_user_agent => nil,
+        :last_request_at => nil,
+        :unsubscribed_from_emails => nil,
+        :update_last_request_at => nil,
+        :new_session => nil,
+        :custom_data => {},
+        :company => nil,
+        :companies => nil
+      })
+      user.name.must_equal('Bob')
     end
   end
 end

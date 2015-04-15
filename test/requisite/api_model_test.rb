@@ -63,12 +63,12 @@ module Requisite
 
     it 'with_type! helper raises on mismatched type' do
       model = DummyApiModel.new()
-      proc { model.with_type!(String) { 1 + 2 }}.must_raise(Requisite::BadTypeError)
+      proc { model.send(:with_type!, String) { 1 + 2 }}.must_raise(Requisite::BadTypeError)
     end
 
     it 'first_attribute_from_model helper finds first matching attriubute' do
       model = DummyApiModel.new(:oh => 12, :a => nil, :b => 'B', :c => 'C')
-      model.first_attribute_from_model(:a, :b, :c).must_equal('B')
+      model.send(:first_attribute_from_model, :a, :b, :c).must_equal('B')
     end
 
     it 'attribute can assert type of a boolean field' do
@@ -81,6 +81,12 @@ module Requisite
       DummyApiModel.serialized_attributes { attribute :num, type: String }
       response = DummyApiModel.new({:num => nil})
       response.to_hash.must_equal({})
+    end
+
+    it 'attribute includes values of nil if permitted' do
+      DummyApiModel.serialized_attributes { attribute :num, type: String }
+      response = DummyApiModel.new({:num => nil})
+      response.to_hash(show_nil: true).must_equal({:num => nil})
     end
 
     it 'attribute can be stringified and renamed with default fields' do

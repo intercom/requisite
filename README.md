@@ -57,7 +57,7 @@ user.to_json
 # => "{\"id\":5,\"real_name\":\"Jamie Osler\",\"username\":\"josler\"}"
 ```
 
-`nil` values are not returned in the response.
+`nil` values are not returned in the response, unless `to_hash(show_nil: true)` or `to_json(show_nil: true)` are requested.
 
 Errors are thrown when a required attribute is not present:
 

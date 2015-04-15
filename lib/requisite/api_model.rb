@@ -25,31 +25,21 @@ module Requisite
       end
     end
 
-    def model_responds_to_attribute_query?(name)
-      if @model.kind_of?(Hash)
-        @model[name] != nil
-      else
-        @model.send(name) if @model.respond_to?(name)
-      end
-    end
-
-    def merge_attribute_if_exists!(to_merge, attribute_name)
-      attribute_from_model(attribute_name) ? to_merge.merge!(attribute_from_model(attribute_name)) : to_merge
-    end
-
-    def to_hash
+    def to_hash(show_nil: false)
       preprocess_model
       {}.tap do |result|
         self.class.attribute_keys_with_inheritance.each do |meth|
           value = self.send(meth)
-          result.merge!({meth => value}) unless value.nil?
+          result.merge!({meth => value}) if show_nil || !value.nil?
         end
       end
     end
 
-    def to_json
-      to_hash.to_json
+    def to_json(show_nil: false)
+      to_hash(show_nil: show_nil).to_json
     end
+
+    private
 
     def parse_typed_hash(name, hash)
       {}.tap do |result|
@@ -98,7 +88,18 @@ module Requisite
       nil
     end
 
-    private
+
+    def model_responds_to_attribute_query?(name)
+      if @model.kind_of?(Hash)
+        @model[name] != nil
+      else
+        @model.send(name) if @model.respond_to?(name)
+      end
+    end
+
+    def merge_attribute_if_exists!(to_merge, attribute_name)
+      attribute_from_model(attribute_name) ? to_merge.merge!(attribute_from_model(attribute_name)) : to_merge
+    end
 
     def preprocess_model
       # noop
