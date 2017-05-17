@@ -28,9 +28,9 @@ module Requisite
     def to_hash(show_nil: false)
       preprocess_model
       {}.tap do |result|
-        self.class.attribute_keys_with_inheritance.each do |meth|
-          value = self.send(meth)
-          result.merge!({meth => value}) if show_nil || !value.nil?
+        self.class.attribute_keys_with_inheritance.each do |key|
+          value = self.send(key)
+          result[key] = value if show_nil || !value.nil?
         end
       end
     end
@@ -88,17 +88,12 @@ module Requisite
       nil
     end
 
-
     def model_responds_to_attribute_query?(name)
       if @model.kind_of?(Hash)
         @model[name] != nil
       else
         @model.send(name) if @model.respond_to?(name)
       end
-    end
-
-    def merge_attribute_if_exists!(to_merge, attribute_name)
-      attribute_from_model(attribute_name) ? to_merge.merge!(attribute_from_model(attribute_name)) : to_merge
     end
 
     def preprocess_model
