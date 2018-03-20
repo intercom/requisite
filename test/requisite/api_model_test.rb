@@ -180,6 +180,13 @@ module Requisite
       response.to_hash.must_equal(:num => 12)
     end
 
+    it 'works with ActionController::Parameters' do
+      DummyApiModel.serialized_attributes { attribute :num }
+      params = ActionController::Parameters.new(num: 12)
+      response = DummyApiModel.new(params)
+      response.to_hash.must_equal(:num => 12)
+    end
+
     describe 'with nested structures' do
 
       describe 'with typed arrays' do
