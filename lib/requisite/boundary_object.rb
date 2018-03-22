@@ -15,7 +15,7 @@ module Requisite
           result
         end
       end
-      
+
       def attribute!(name, options={})
         attribute_keys << name
         define_method(name) do
@@ -29,7 +29,7 @@ module Requisite
           result
         end
       end
-      
+
       def serialized_attributes(&block)
         @attribute_keys = []
         instance_eval(&block)
@@ -45,10 +45,10 @@ module Requisite
     end
 
     private
-    
+
     self.singleton_class.send(:alias_method, :a, :attribute)
     self.singleton_class.send(:alias_method, :a!, :attribute!)
-    
+
     def raise_bad_type_if_type_mismatch(value, desired_type)
       raise BadTypeError.new(value, desired_type) unless (value.kind_of?(desired_type)) || ((value.kind_of?(TrueClass) || value.kind_of?(TrueClass)) && desired_type == Requisite::Boolean)
     end
@@ -56,7 +56,7 @@ module Requisite
     def raise_not_implemented_for_attribute(name)
       raise NotImplementedError.new("'#{name}' method not implemented")
     end
-    
+
     def empty_result?(result)
       result.nil? || result == {}
     end

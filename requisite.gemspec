@@ -13,6 +13,8 @@ Gem::Specification.new do |gem|
   gem.homepage      = 'https://www.intercom.io'
   gem.license       = 'Apache License Version 2.0'
   gem.add_development_dependency "minitest"
+  gem.add_development_dependency "rake"
+  gem.add_runtime_dependency "actionpack", ">= 4.2.0"
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})

@@ -5,7 +5,14 @@ module Requisite
     attr_reader :model
 
     def initialize(model={})
-      @model = model.kind_of?(Hash) ? Hash[model.map{ |k, v| [k.to_sym, v] }] : model
+      @model = case model
+      when ActionController::Parameters
+        Hash[model.to_unsafe_h.map { |k, v| [k.to_sym, v] }]
+      when Hash
+        Hash[model.map { |k, v| [k.to_sym, v] }]
+      else
+        model
+      end
     end
 
     def convert(name)
