@@ -12,6 +12,8 @@ module Requisite
           result = options[:default] if (options[:default] && empty_result?(result))
           raise_bad_type_if_type_mismatch(result, options[:type]) if options[:type] && result
           result = result.to_s if options[:stringify]
+          result = result.map{ |r| options[:serializer].from_hash(r) } if options[:serializer] && result.is_a?(Array)
+          result = options[:serializer].from_hash(result) if options[:serializer] && !result.is_a?(Array)
           result
         end
       end
@@ -26,6 +28,8 @@ module Requisite
           result = self.send(:parse_typed_array, resolved_name, options[:typed_array]) if options[:typed_array]
           result = result.to_s if options[:stringify]
           raise_bad_type_if_type_mismatch(result, options[:type]) if options[:type]
+          result = result.map{ |r| options[:serializer].from_hash(r) } if options[:serializer] && result.is_a?(Array)
+          result = options[:serializer].from_hash(result) if options[:serializer] && !result.is_a?(Array)
           result
         end
       end

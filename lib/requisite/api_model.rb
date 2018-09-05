@@ -37,6 +37,8 @@ module Requisite
       {}.tap do |result|
         self.class.attribute_keys_with_inheritance.each do |key|
           value = self.send(key)
+          value = value.map(&:to_hash) if value.is_a?(Array)
+          value = value.to_hash if !value.nil? && value.respond_to?(:to_hash)
           result[key] = value if show_nil || !value.nil?
         end
       end
