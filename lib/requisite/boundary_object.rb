@@ -12,8 +12,7 @@ module Requisite
           result = options[:default] if (options[:default] && empty_result?(result))
           raise_bad_type_if_type_mismatch(result, options[:type]) if options[:type] && result
           result = result.to_s if options[:stringify]
-          result = result.map{ |r| options[:serializer].from_hash(r) } if options[:serializer] && result.is_a?(Array)
-          result = options[:serializer].from_hash(result) if options[:serializer] && !result.is_a?(Array)
+          result = deserialize_attribute(result, options[:serializer]) if options[:serializer] && result
           result
         end
       end
@@ -28,8 +27,7 @@ module Requisite
           result = self.send(:parse_typed_array, resolved_name, options[:typed_array]) if options[:typed_array]
           result = result.to_s if options[:stringify]
           raise_bad_type_if_type_mismatch(result, options[:type]) if options[:type]
-          result = result.map{ |r| options[:serializer].from_hash(r) } if options[:serializer] && result.is_a?(Array)
-          result = options[:serializer].from_hash(result) if options[:serializer] && !result.is_a?(Array)
+          result = deserialize_attribute(result, options[:serializer]) if options[:serializer]
           result
         end
       end
@@ -59,6 +57,10 @@ module Requisite
 
     def raise_not_implemented_for_attribute(name)
       raise NotImplementedError.new("'#{name}' method not implemented")
+    end
+
+    def deserialize_attribute(value, serializer)
+      value.is_a?(Array) ? value.map{ |r| serializer.from_hash(r) } : serializer.from_hash(value)
     end
 
     def empty_result?(result)
