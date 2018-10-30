@@ -31,7 +31,7 @@ GEM
     erubi (1.7.1)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
-    loofah (2.2.2)
+    loofah (2.2.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mini_portile2 (2.3.0)
@@ -60,4 +60,4 @@ DEPENDENCIES
   requisite!
 
 BUNDLED WITH
-   1.16.1
+   1.16.4
