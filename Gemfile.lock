@@ -36,7 +36,7 @@ GEM
       nokogiri (>= 1.5.9)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
-    nokogiri (1.8.2)
+    nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
     rack (2.0.6)
     rack-test (0.8.3)
@@ -60,4 +60,4 @@ DEPENDENCIES
   requisite!
 
 BUNDLED WITH
-   1.16.5
+   1.17.3
