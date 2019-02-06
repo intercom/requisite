@@ -1,3 +1,6 @@
+### Unreleased
+  - Remove Gemfile.lock
+
 ### 0.3.0 (15th April 2015):
   - Optionally allow nils to be returned
 
