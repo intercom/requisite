@@ -1,4 +1,6 @@
 ### Unreleased
+
+### 0.4.1 (6th February 2019)
   - Remove Gemfile.lock
 
 ### 0.3.0 (15th April 2015):
