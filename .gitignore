@@ -1,1 +1,2 @@
-*.gemGemfile.lock
+*.gem
+Gemfile.lock
