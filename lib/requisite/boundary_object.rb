@@ -9,7 +9,7 @@ module Requisite
           result = self.send(:parse_typed_hash, resolved_name, options[:typed_hash]) if options[:typed_hash]
           result = self.send(:parse_scalar_hash, resolved_name) if options[:scalar_hash]
           result = self.send(:parse_typed_array, resolved_name, options[:typed_array]) if options[:typed_array]
-          result = options[:default] if (options[:default] && empty_result?(result))
+          result = options[:default] if (options.key?(:default) && empty_result?(result))
           raise_bad_type_if_type_mismatch(result, options[:type]) if options[:type] && result
           result = result.to_s if options[:stringify]
           result
@@ -50,7 +50,7 @@ module Requisite
     self.singleton_class.send(:alias_method, :a!, :attribute!)
 
     def raise_bad_type_if_type_mismatch(value, desired_type)
-      raise BadTypeError.new(value, desired_type) unless (value.kind_of?(desired_type)) || ((value.kind_of?(TrueClass) || value.kind_of?(TrueClass)) && desired_type == Requisite::Boolean)
+      raise BadTypeError.new(value, desired_type) unless (value.kind_of?(desired_type)) || ((value.kind_of?(TrueClass) || value.kind_of?(FalseClass)) && desired_type == Requisite::Boolean)
     end
 
     def raise_not_implemented_for_attribute(name)
