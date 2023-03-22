@@ -46,6 +46,10 @@ module Requisite
       to_hash(show_nil: show_nil).to_json
     end
 
+    def ==(other)
+      other.class == self.class && other.to_hash == self.to_hash
+    end
+
     private
 
     def parse_typed_hash(name, hash)

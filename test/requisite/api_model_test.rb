@@ -198,6 +198,30 @@ module Requisite
       _(response.to_hash).must_equal(:num => 12)
     end
 
+    describe '#==' do
+      let(:response_1) do
+        DummyApiModel.serialized_attributes { attribute :a }
+        DummyApiModel.new(a: 'A')
+      end
+
+      it 'is true with the same object' do
+        response_2 = response_1
+        assert_equal response_1, response_2
+      end
+
+      it 'is true with an equal object' do
+        DummyApiModel.serialized_attributes { attribute :a }
+        response_2 = DummyApiModel.new(a: 'A')
+        assert_equal response_1, response_2
+      end
+
+      it 'is false with an unequal object' do
+        DummyApiModel.serialized_attributes { attribute :a }
+        response_2 = DummyApiModel.new(a: 'B')
+        refute_equal response_1, response_2
+      end
+    end
+
     describe 'with nested structures' do
 
       describe 'with typed arrays' do
