@@ -107,7 +107,7 @@ module Requisite
     end
 
     it 'attribute can be stringified after type check' do
-      DummyApiModel.serialized_attributes { attribute :num, stringify: true, type: Fixnum }
+      DummyApiModel.serialized_attributes { attribute :num, stringify: true, type: Integer }
       response = DummyApiModel.new(params_hash)
       _(response.to_hash).must_equal(:num => '12')
     end
@@ -202,7 +202,7 @@ module Requisite
 
       describe 'with typed arrays' do
         it 'allows arrays of one type' do
-          DummyApiModel.serialized_attributes { attribute :ids, typed_array: Fixnum }
+          DummyApiModel.serialized_attributes { attribute :ids, typed_array: Integer }
           response = DummyApiModel.new({ids: [1, 2, 3]})
           _(response.to_hash).must_equal(:ids => [1, 2, 3])
         end

@@ -1,15 +1,17 @@
 require 'test_helper'
+require 'benchmark'
 
 # Example Object
 class ApiUser < Requisite::ApiModel
+
   serialized_attributes do
     attribute :id, type: String
     attribute :user_id
     attribute :email, type: String
     attribute :name, type: String
-    attribute :created_at, type: Fixnum
+    attribute :created_at, type: Integer
     attribute :last_seen_user_agent, type: String
-    attribute :last_request_at, type: Fixnum
+    attribute :last_request_at, type: Integer
     attribute :unsubscribed_from_emails, type: Requisite::Boolean
     attribute :update_last_request_at, type: Requisite::Boolean
     attribute :new_session, type: Requisite::Boolean
@@ -17,7 +19,7 @@ class ApiUser < Requisite::ApiModel
     attribute :company
     attribute :companies
   end
-  
+
   # Ensure that at least one identifier is passed
   def preprocess_model
     identifier = attribute_from_model(:id)
@@ -25,10 +27,30 @@ class ApiUser < Requisite::ApiModel
     identifier ||= attribute_from_model(:email)
     raise StandardError unless identifier
   end
-  
+
+  def last_attribute_fetch_time
+    @last_attribute_fetch_time
+  end
+
+  def attribute_names
+    @attribute_names
+  end
+
+  def around_each_attribute(name)
+    @last_attribute_fetch_time = nil
+    @attribute_names ||= []
+
+    result = nil
+
+    @last_attribute_fetch_time = Benchmark.measure do
+      result = yield
+    end.total
+    @attribute_names << name
+  end
+
   # We want to accept someone sending `created_at` or `created` as parameters
   def created_at
-    with_type!(Fixnum) { attribute_from_model(:created_at) || attribute_from_model(:created) }
+    with_type!(Integer) { attribute_from_model(:created_at) || attribute_from_model(:created) }
   end
 end
 
@@ -71,13 +93,13 @@ module Requisite
       })
       user.name.must_equal('Bob')
     end
-    
+
     it 'raises an error without an identifier' do
       user_request_params = { :name => 'Bob' }
       user = ApiUser.new(user_request_params)
       proc { user.to_hash }.must_raise(StandardError)
     end
-    
+
     it 'raises an error when created or created_at is not of the right type' do
       user_request_params = { :user_id => 'abcdef', :created => 'Thursday' }
       user = ApiUser.new(user_request_params)
@@ -116,7 +138,7 @@ module Requisite
         :new_attribute => 'hi'
       })
     end
-    
+
     it 'accepts a user model' do
       user_model = UserModel.new
       user_model.user_id = 'abcdef'
@@ -129,7 +151,7 @@ module Requisite
       })
       user.name.must_equal('Bob')
     end
-    
+
     it 'accepts a user model and renders nils if asked' do
       user_model = UserModel.new
       user_model.user_id = 'abcdef'
@@ -151,6 +173,17 @@ module Requisite
         :companies => nil
       })
       user.name.must_equal('Bob')
+    end
+
+    it 'calls around_each_attribute for each attribute' do
+      user_model = UserModel.new
+      user_model.user_id = 'abcdef'
+      user = ApiUser.new(user_model)
+
+      user.to_hash(show_nil: true)
+
+      user.attribute_names.must_equal [:id, :user_id, :email, :name, :last_seen_user_agent, :last_request_at, :unsubscribed_from_emails, :update_last_request_at, :new_session, :custom_data, :company, :companies]
+      user.last_attribute_fetch_time.must_be :>, 0
     end
   end
 end

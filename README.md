@@ -38,7 +38,7 @@ class UserApiModel < Requisite::ApiModel
     attribute! :username
     attribute :real_name
   end
-  
+
   # method with the name of of an attribute will be called to calculate the mapped value
   def real_name
     "#{attribute_from_model(:first_name)} #{attribute_from_model(:last_name)}"
@@ -88,10 +88,10 @@ Example:
 class UserApiModel < Requisite::ApiModel
   serialized_attributes do
     attribute :id, stringify: true
-    attribute :custom_attributes, rename: :custom_data 
+    attribute :custom_attributes, rename: :custom_data
     attribute :is_awesome, default: true
     attribute :awesome_score, rename: :score, stringify: true, default: 9001
-    attribute :age, type: Fixnum,
+    attribute :age, type: Integer,
     attribute :tired, type: Requisite::Boolean
   end
 end
@@ -131,7 +131,7 @@ With typed hashes, only values specified with a type are permitted:
 ```ruby
 class UserApiModel < Requisite::ApiModel
   serialized_attributes do
-    attribute :data, typed_hash: { is_awesome: Requisite::Boolean, score: Fixnum, name: String  }
+    attribute :data, typed_hash: { is_awesome: Requisite::Boolean, score: Integer, name: String  }
   end
 end
 
@@ -198,7 +198,27 @@ class ApiUser < Requisite::ApiModel
     raise IdentifierNotFoundError unless identifier
   end
 end
-```  
+```
+
+#### Around each attribute
+
+An `around_each_attribute` method can be defined to wrap each attribute fetch in a block. This can be useful for instrumenting processing on a per attribute basis.
+
+```ruby
+class ApiUser < Requisite::ApiModel
+  serialized_attributes do
+    attribute :id, type: String
+    attribute :email, type: String
+  end
+
+  def around_each_attribute(name, &block)
+    start = Time.now
+    yield
+    end = Time.now
+    puts "Fetching #{name} took #{end - start}"
+  end
+end
+```
 
 #### Thanks
 
