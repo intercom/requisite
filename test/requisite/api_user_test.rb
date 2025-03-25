@@ -1,6 +1,5 @@
 require 'test_helper'
 require 'benchmark'
-
 # Example Object
 class ApiUser < Requisite::ApiModel
 
@@ -18,6 +17,7 @@ class ApiUser < Requisite::ApiModel
     attribute :custom_data, scalar_hash: true, rename: :custom_attributes
     attribute :company
     attribute :companies
+    attribute :api_version, type: Integer
   end
 
   # Ensure that at least one identifier is passed
@@ -26,6 +26,10 @@ class ApiUser < Requisite::ApiModel
     identifier ||= attribute_from_model(:user_id)
     identifier ||= attribute_from_model(:email)
     raise StandardError unless identifier
+  end
+
+  def api_version
+    1
   end
 
   def last_attribute_fetch_time
@@ -89,7 +93,8 @@ module Requisite
         :custom_data => {
           :is_cool => true,
           :logins => 77
-        }
+        },
+        :api_version => 1
       })
       user.name.must_equal('Bob')
     end
@@ -135,7 +140,8 @@ module Requisite
         :custom_data => {
           :different => true
         },
-        :new_attribute => 'hi'
+        :new_attribute => 'hi',
+        :api_version => 1
       })
     end
 
@@ -147,7 +153,8 @@ module Requisite
       user.to_hash.must_equal({
         :user_id => 'abcdef',
         :name => 'Bob',
-        :custom_data => {}
+        :custom_data => {},
+        :api_version => 1
       })
       user.name.must_equal('Bob')
     end
@@ -170,7 +177,8 @@ module Requisite
         :new_session => nil,
         :custom_data => {},
         :company => nil,
-        :companies => nil
+        :companies => nil,
+        :api_version => 1
       })
       user.name.must_equal('Bob')
     end
@@ -182,7 +190,7 @@ module Requisite
 
       user.to_hash(show_nil: true)
 
-      user.attribute_names.must_equal [:id, :user_id, :email, :name, :last_seen_user_agent, :last_request_at, :unsubscribed_from_emails, :update_last_request_at, :new_session, :custom_data, :company, :companies]
+      user.attribute_names.must_equal [:id, :user_id, :email, :name, :created_at, :last_seen_user_agent, :last_request_at, :unsubscribed_from_emails, :update_last_request_at, :new_session, :custom_data, :company, :companies, :api_version]
       user.last_attribute_fetch_time.must_be :>, 0
     end
   end

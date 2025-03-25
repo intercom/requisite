@@ -4,17 +4,14 @@ module Requisite
       def attribute(name, options={})
         attribute_keys << name
         define_method(name) do
-          result = nil
-          self.send(:around_each_attribute, name) do
-            resolved_name = options[:rename] || name
-            result = self.send(:convert, resolved_name)
-            result = self.send(:parse_typed_hash, resolved_name, options[:typed_hash]) if options[:typed_hash]
-            result = self.send(:parse_scalar_hash, resolved_name) if options[:scalar_hash]
-            result = self.send(:parse_typed_array, resolved_name, options[:typed_array]) if options[:typed_array]
-            result = options[:default] if (options.key?(:default) && empty_result?(result))
-            raise_bad_type_if_type_mismatch(result, options[:type]) if options[:type] && result
-            result = result.to_s if options[:stringify]
-          end
+          resolved_name = options[:rename] || name
+          result = self.send(:convert, resolved_name)
+          result = self.send(:parse_typed_hash, resolved_name, options[:typed_hash]) if options[:typed_hash]
+          result = self.send(:parse_scalar_hash, resolved_name) if options[:scalar_hash]
+          result = self.send(:parse_typed_array, resolved_name, options[:typed_array]) if options[:typed_array]
+          result = options[:default] if (options.key?(:default) && empty_result?(result))
+          raise_bad_type_if_type_mismatch(result, options[:type]) if options[:type] && result
+          result = result.to_s if options[:stringify]
           result
         end
       end
@@ -22,16 +19,13 @@ module Requisite
       def attribute!(name, options={})
         attribute_keys << name
         define_method(name) do
-          result = nil
-          self.send(:around_each_attribute, name) do
-            resolved_name = options[:rename] || name
-            result = self.send(:convert!, resolved_name)
-            result = self.send(:parse_typed_hash, resolved_name, options[:typed_hash]) if options[:typed_hash]
-            result = self.send(:parse_scalar_hash, resolved_name) if options[:scalar_hash]
-            result = self.send(:parse_typed_array, resolved_name, options[:typed_array]) if options[:typed_array]
-            result = result.to_s if options[:stringify]
-            raise_bad_type_if_type_mismatch(result, options[:type]) if options[:type]
-          end
+          resolved_name = options[:rename] || name
+          result = self.send(:convert!, resolved_name)
+          result = self.send(:parse_typed_hash, resolved_name, options[:typed_hash]) if options[:typed_hash]
+          result = self.send(:parse_scalar_hash, resolved_name) if options[:scalar_hash]
+          result = self.send(:parse_typed_array, resolved_name, options[:typed_array]) if options[:typed_array]
+          result = result.to_s if options[:stringify]
+          raise_bad_type_if_type_mismatch(result, options[:type]) if options[:type]
           result
         end
       end
@@ -51,10 +45,6 @@ module Requisite
     end
 
     private
-
-    def around_each_attribute(name)
-      yield
-    end
 
     self.singleton_class.send(:alias_method, :a, :attribute)
     self.singleton_class.send(:alias_method, :a!, :attribute!)
