@@ -36,7 +36,10 @@ module Requisite
       preprocess_model
       {}.tap do |result|
         self.class.attribute_keys_with_inheritance.each do |key|
-          value = self.send(key)
+          value = nil
+          around_each_attribute(key) do
+            value = self.send(key)
+          end
           result[key] = value if show_nil || !value.nil?
         end
       end
@@ -105,6 +108,10 @@ module Requisite
 
     def preprocess_model
       # noop
+    end
+
+    def around_each_attribute(name)
+      yield
     end
   end
 end
